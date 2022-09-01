@@ -46,7 +46,7 @@ Before compiling a library, we need to find the function name called by the bina
 
 We can copy an existing library to the `development` folder. Running `ldd` against the binary lists the library's path as `/development/libshared.so`, which means that it is vulnerable. Executing the binary throws an error stating that it failed to find the function named `dbquery`. We can compile a shared object which includes this function.
 
-<Code : c>
+> Code : c
     #include<stdio.h>
     #include<stdlib.h>
 
