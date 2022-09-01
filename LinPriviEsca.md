@@ -103,14 +103,133 @@ total 8
 
 > sudo -l
 
-Matching Defaults entries for sysadm on NIX02:
-    env_reset, mail_badpass, secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin
+*Matching Defaults entries for sysadm on NIX02:*
+    *env_reset, mail_badpass, secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin*
 
-User sysadm may run the following commands on NIX02:
-    (root) NOPASSWD: /usr/sbin/tcpdump
+*User sysadm may run the following commands on NIX02:*
+    *(root) NOPASSWD: /usr/sbin/tcpdump*
 
-Configuration Files: `Configuration files can hold a wealth of information. It is worth searching through all files that end in extensions such as` .conf `and `.config`, for usernames, passwords, and other secrets.`
 
-Readable Shadow File: `If the shadow file is readable, you will be able to gather password hashes for all users who have a password set. While this does not guarantee further access, these hashes can be subjected to an offline brute-force attack to recover the cleartext password.`
+# Configuration Files: 
+`Configuration files can hold a wealth of information. It is worth searching through all files that end in extensions such as` .conf `and `.config`, for usernames, passwords, and other secrets.`
 
-Password Hashes in /etc/passwd:` Occasionally, you will see password hashes directly in the /etc/passwd file. This file is readable by all users, and as with hashes in the `shadow file`, these can be subjected to an offline password cracking attack. This configuration, while not common, can sometimes be seen on embedded devices and routers.`
+# Readable Shadow File: 
+`If the shadow file is readable, you will be able to gather password hashes for all users who have a password set. While this does not guarantee further access, these hashes can be subjected to an offline brute-force attack to recover the cleartext password.`
+
+# Password Hashes in /etc/passwd: 
+`Occasionally, you will see password hashes directly in the /etc/passwd file. This file is readable by all users, and as with hashes in the `shadow file`, these can be subjected to an offline password cracking attack. This configuration, while not common, can sometimes be seen on embedded devices and routers.`
+
+# Passwd
+
+> cat /etc/passwd
+
+root:x:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
+bin:x:2:2:bin:/bin:/usr/sbin/nologin
+sys:x:3:3:sys:/dev:/usr/sbin/nologin
+sync:x:4:65534:sync:/bin:/bin/sync
+games:x:5:60:games:/usr/games:/usr/sbin/nologin
+man:x:6:12:man:/var/cache/man:/usr/sbin/nologin
+lp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nologin
+mail:x:8:8:mail:/var/mail:/usr/sbin/nologin
+news:x:9:9:news:/var/spool/news:/usr/sbin/nologin
+<...SNIP...>
+dnsmasq:x:109:65534:dnsmasq,,,:/var/lib/misc:/bin/false
+sshd:x:110:65534::/var/run/sshd:/usr/sbin/nologin
+mrb3n:x:1000:1000:mrb3n,,,:/home/mrb3n:/bin/bash
+colord:x:111:118:colord colour management daemon,,,:/var/lib/colord:/bin/false
+backupsvc:x:1001:1001::/home/backupsvc:
+bob.jones:x:1002:1002::/home/bob.jones:
+cliff.moore:x:1003:1003::/home/cliff.moore:
+logger:x:1004:1004::/home/logger:
+shared:x:1005:1005::/home/shared:
+stacey.jenkins:x:1006:1006::/home/stacey.jenkins:
+sysadm:$6$vdH7vuQIv6anIBWg$Ysk.UZzI7WxYUBYt8WRIWF0EzWlksOElDE0HLYinee38QI1A.0HW7WZCrUhZ9wwDz13bPpkTjNuRoUGYhwFE11:1007:1007::/home/sysadm:
+
+# Cron Jobs: 
+`Cron jobs on Linux systems are similar to Windows scheduled tasks. They are often set up to perform maintenance and backup tasks. In conjunction with other misconfigurations such as relative paths or weak permissions, they can leverage to escalate privileges when the scheduled cron job runs.`
+
+# Cron Jobs
+
+> ls -la /etc/cron.daily/
+
+total 60
+drwxr-xr-x  2 root root 4096 Aug 30 23:49 .
+drwxr-xr-x 93 root root 4096 Aug 30 23:47 ..
+-rwxr-xr-x  1 root root  376 Mar 31  2016 apport
+-rwxr-xr-x  1 root root 1474 Sep 26  2017 apt-compat
+-rwx--x--x  1 root root  379 Aug 30 23:49 backup
+-rwxr-xr-x  1 root root  355 May 22  2012 bsdmainutils
+-rwxr-xr-x  1 root root 1597 Nov 27  2015 dpkg
+-rwxr-xr-x  1 root root  372 May  6  2015 logrotate
+-rwxr-xr-x  1 root root 1293 Nov  6  2015 man-db
+-rwxr-xr-x  1 root root  539 Jul 16  2014 mdadm
+-rwxr-xr-x  1 root root  435 Nov 18  2014 mlocate
+-rwxr-xr-x  1 root root  249 Nov 12  2015 passwd
+-rw-r--r--  1 root root  102 Apr  5  2016 .placeholder
+-rwxr-xr-x  1 root root 3449 Feb 26  2016 popularity-contest
+-rwxr-xr-x  1 root root  214 May 24  2016 update-notifier-common
+
+
+# Unmounted File Systems and Additional Drives: 
+`If you discover and can mount an additional drive or unmounted file system, you may find sensitive files, passwords, or backups that can be leveraged to escalate privileges.`
+
+# File Systems & Additional Drives
+
+> lsblk
+
+NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+sda      8:0    0   30G  0 disk 
+├─sda1   8:1    0   29G  0 part /
+├─sda2   8:2    0    1K  0 part 
+└─sda5   8:5    0  975M  0 part [SWAP]
+sr0     11:0    1  848M  0 rom  
+
+# SETUID and SETGID Permissions: 
+`Binaries are set with these permissions to allow a user to run a command as root, without having to grand root-level access to the user. Many binaries contain functionality that can be exploited to get a root shell`
+
+# Writeable Directories:
+`It is important to discover which directories are writeable if you need to download tools to the system. You may discover a writeable directory where a cron job places files, which provides an idea of how often the cron job runs and could be used to elevate privileges if the script that the cron job runs is also writeable.`
+
+# Find Writable Directories
+
+> find / -path /proc -prune -o -type d -perm -o+w 2>/dev/null
+
+/dmz-backups
+/tmp
+/tmp/VMwareDnD
+/tmp/.XIM-unix
+/tmp/.Test-unix
+/tmp/.X11-unix
+/tmp/systemd-private-8a2c51fcbad240d09578916b47b0bb17-systemd-timesyncd.service-TIecv0/tmp
+/tmp/.font-unix
+/tmp/.ICE-unix
+/proc
+/dev/mqueue
+/dev/shm
+/var/tmp
+/var/tmp/systemd-private-8a2c51fcbad240d09578916b47b0bb17-systemd-timesyncd.service-hm6Qdl/tmp
+/var/crash
+/run/lock
+
+# Writeable Files:
+`Are any scripts or configuration files world-writable? While altering configuration files can be extremely destructive, there may be instances where a minor modification can open up further access. Also, any scripts that are run as root using cron jobs can be modified slightly to append a command.`
+
+# Find Writable Files
+
+> find / -path /proc -prune -o -type f -perm -o+w 2>/dev/null
+
+/etc/cron.daily/backup
+/dmz-backups/backup.sh
+/proc
+/sys/fs/cgroup/memory/init.scope/cgroup.event_control
+
+<SNIP>
+
+/home/backupsvc/backup.sh
+
+<SNIP>
+
+# Moving on
+
+`As we have seen, there are various manual enumeration techniques that we can perform to gain information to inform various privilege escalation attacks. A variety of techniques exist that can be leveraged to perform local privilege escalation on Linux, which we will cover in the next sections.`
