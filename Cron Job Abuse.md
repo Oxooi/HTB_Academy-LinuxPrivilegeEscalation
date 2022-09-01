@@ -103,7 +103,7 @@ We can look at the shell script and append a command to it to attempt to obtain 
 
  We can see that the script is just taking in a source and destination directory as variables. It then specifies a file name with the current date and time of backup and creates a tarball of the source directory, the web root directory. Let's modify the script to add a` <Bash one-liner reverse shell.> (*https://pentestmonkey.net/cheat-sheet/shells/reverse-shell-cheat-sheet*)
 
- <Code: bash>
+ # Code: bash
 
      #!/bin/bash
      SRCDIR="/var/www/html"
