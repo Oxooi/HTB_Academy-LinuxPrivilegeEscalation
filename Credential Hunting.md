@@ -6,23 +6,23 @@ The */var* directory typically contains the web root for whatever web server is 
 
 > cat wp-config.php | grep 'DB_USER\|DB_PASSWORD'
 
-define( 'DB_USER', 'wordpressuser' );
-define( 'DB_PASSWORD', 'WPadmin123!' );
+    define( 'DB_USER', 'wordpressuser' );
+    define( 'DB_PASSWORD', 'WPadmin123!' );
 
 The spool or mail directories, if accessible, may also contain valuable information or even credentials. It is common to find credentials stored in files in the web root (i.e. MySQL connection strings, WordPress configuration files).
 
 >  find / ! -path "*/proc/*" -iname "*config*" -type f 2>/dev/null
 
-/etc/ssh/ssh_config
-/etc/ssh/sshd_config
-/etc/python3/debian_config
-/etc/kbd/config
-/etc/manpath.config
-/boot/config-4.4.0-116-generic
-/boot/grub/i386-pc/configfile.mod
-/sys/devices/pci0000:00/0000:00:00.0/config
-/sys/devices/pci0000:00/0000:00:01.0/config
-<SNIP>
+    /etc/ssh/ssh_config
+    /etc/ssh/sshd_config
+    /etc/python3/debian_config
+    /etc/kbd/config
+    /etc/manpath.config
+    /boot/config-4.4.0-116-generic
+    /boot/grub/i386-pc/configfile.mod
+    /sys/devices/pci0000:00/0000:00:00.0/config
+    /sys/devices/pci0000:00/0000:00:01.0/config
+    <SNIP>
 
 # SSH Keys
 
@@ -30,4 +30,4 @@ It is also useful to search around the system for accessible SSH private keys. W
 
 > ls ~/.ssh
 
-id_rsa  id_rsa.pub  known_hosts
+    id_rsa  id_rsa.pub  known_hosts
