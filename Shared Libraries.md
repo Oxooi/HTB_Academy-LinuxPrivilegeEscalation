@@ -30,7 +30,7 @@ Let's see an example of how we can utilize the <LD_PRELOAD> (*https://blog.fpmur
 
 This user has rights to restart the Apache service as root, but since this is `NOT` a <GTFOBin> and the `/etc/sudoers entry` is written specifying the absolute path, this could not be used to escalate privileges under normal circumstances. However, we can exploit the `LD_PRELOAD` issue to run a custom shared library file. Let's compile the following library:
 
-<Code: c>
+# Code: c
 
     #include <stdio.h>
     #include <sys/types.h>
